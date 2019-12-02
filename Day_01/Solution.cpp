@@ -38,6 +38,11 @@ Input_t LoadInput() {
         exit(EXIT_FAILURE);
     }
 
+    if (fclose(File) == EOF) {
+        printf("ERROR(%d): fclose failed.", errno);
+        exit(EXIT_FAILURE);
+    }
+
     int Offset = 0;
     Input_t Result = {};
     for (int i = 0; i < Length; ++i) {
@@ -90,7 +95,7 @@ int SolvePuzzle2() {
 
 extern "C"
 int main(int argc, char const* argv[]) {
-    printf("Fuel: %d\n", SolvePuzzle1());
-    printf("Total Fuel: %d\n", SolvePuzzle2());
+    printf("Part 1: %d\n", SolvePuzzle1());
+    printf("Part 2: %d\n", SolvePuzzle2());
     return EXIT_SUCCESS;
 }
