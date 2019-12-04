@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 
@@ -5,7 +6,7 @@ struct Point_t {
     int X, Y, Steps;
 };
 
-#define MAX_POINT_COUNT 1024
+#define MAX_POINT_COUNT 512
 
 struct Wire_t {
     int Count;
@@ -63,51 +64,48 @@ Input_t LoadInput() {
 
     int Offset = 0;
     int WireIndex = 0;
-    int PointIndex = 0;
+    int PointIndex = 1;
     for (int i = 0; i < Length; ++i) {
-        if (Buffer[i] == ',' || Buffer[i] == '\n') {
-            bool NextWire = false;
-            if (Buffer[i] == '\n') {
-                NextWire = true;
-            }
+        bool NextWire = false;
+        if (Buffer[i] == '\n') {
+            NextWire = true;
+        }
 
+        if (Buffer[i] == ',' || Buffer[i] == '\n') {
             Buffer[i] = NULL;
 
             char Direction = *(Buffer + Offset);
             int Distance = atoi(Buffer + Offset + 1);
 
-            PointIndex += 1;
             Result.Wires[WireIndex].Count += 1;
-            Result.Wires[WireIndex].Points[PointIndex] = {};
+            assert(Result.Wires[WireIndex].Count <= MAX_POINT_COUNT);
 
-            int PreviousX = Result.Wires[WireIndex].Points[PointIndex-1].X;
-            int PreviousY = Result.Wires[WireIndex].Points[PointIndex-1].Y;
-            int PreviousSteps = Result.Wires[WireIndex].Points[PointIndex-1].Steps;
+            Point_t* Point = Result.Wires[WireIndex].Points + PointIndex;
+            Point_t* Previous = Result.Wires[WireIndex].Points + PointIndex - 1;
 
             if (Direction == 'U') {
-                Result.Wires[WireIndex].Points[PointIndex].X = PreviousX;
-                Result.Wires[WireIndex].Points[PointIndex].Y = PreviousY + Distance;
-                Result.Wires[WireIndex].Points[PointIndex].Steps = PreviousSteps + abs(Distance);
+                Point->X = Previous->X;
+                Point->Y = Previous->Y + Distance;
             } else if (Direction == 'D') {
-                Result.Wires[WireIndex].Points[PointIndex].X = PreviousX;
-                Result.Wires[WireIndex].Points[PointIndex].Y = PreviousY - Distance;
-                Result.Wires[WireIndex].Points[PointIndex].Steps = PreviousSteps + abs(Distance);
+                Point->X = Previous->X;
+                Point->Y = Previous->Y - Distance;
             } else if (Direction == 'L') {
-                Result.Wires[WireIndex].Points[PointIndex].X = PreviousX - Distance;
-                Result.Wires[WireIndex].Points[PointIndex].Y = PreviousY;
-                Result.Wires[WireIndex].Points[PointIndex].Steps = PreviousSteps + abs(Distance);
+                Point->X = Previous->X - Distance;
+                Point->Y = Previous->Y;
             } else if (Direction == 'R') {
-                Result.Wires[WireIndex].Points[PointIndex].X = PreviousX + Distance;
-                Result.Wires[WireIndex].Points[PointIndex].Y = PreviousY;
-                Result.Wires[WireIndex].Points[PointIndex].Steps = PreviousSteps + abs(Distance);
+                Point->X = Previous->X + Distance;
+                Point->Y = Previous->Y;
             }
+
+            Point->Steps = Previous->Steps + abs(Distance);
 
             Offset = i + 1;
+            PointIndex += 1;
+        }
 
-            if (NextWire) {
-                WireIndex += 1;
-                PointIndex = 0;
-            }
+        if (NextWire) {
+            WireIndex += 1;
+            PointIndex = 1;
         }
     }
 
@@ -115,18 +113,21 @@ Input_t LoadInput() {
     return Result;
 }
 
+bool LinesIntersect(Point_t V1, Point_t V2, Point_t H1, Point_t H2) {
+    bool T1 = ((H1.X <= V1.X) && (V1.X <= H2.X))
+           || ((H2.X <= V1.X) && (V1.X <= H1.X));
+    bool T2 = ((V1.Y <= H1.Y) && (H1.Y <= V2.Y))
+           || ((V2.Y <= H1.Y) && (H1.Y <= V1.Y));
+    return T1 && T2;
+}
+
 bool LinesIntersect(Point_t A1, Point_t A2, Point_t B1, Point_t B2, Point_t* HitPoint) {
     bool Hit = false;
 
     // A is Vertical, B is Horizontal
     if ((A1.X == A2.X) && (B1.Y == B2.Y)) {
-        bool T1 = ((B1.X <= A1.X) && (A1.X <= B2.X))
-                || ((B2.X <= A1.X) && (A1.X <= B1.X));
-        bool T2 = ((A1.Y <= B1.Y) && (B1.Y <= A2.Y))
-                || ((A2.Y <= B1.Y) && (B1.Y <= A1.Y));
-        Hit = T1 && T2;
-
-        if (Hit) {
+        if (LinesIntersect(A1, A2, B1, B2)) {
+            Hit = true;
             HitPoint->X = A1.X;
             HitPoint->Y = B1.Y;
         }
@@ -134,13 +135,8 @@ bool LinesIntersect(Point_t A1, Point_t A2, Point_t B1, Point_t B2, Point_t* Hit
     
     // A is Horizontal, B is Vertical
     else if ((A1.Y == A2.Y) && (B1.X == B2.X)) {
-        bool T1 = ((A1.X <= B1.X) && (B1.X <= A2.X))
-                || ((A2.X <= B1.X) && (B1.X <= A1.X));
-        bool T2 = ((B1.Y <= A1.Y) && (A1.Y <= B2.Y))
-                || ((B2.Y <= A1.Y) && (A1.Y <= B1.Y));
-        Hit = T1 && T2;
-
-        if (Hit) {
+        if (LinesIntersect(B1, B2, A1, A2)) {
+            Hit = true;
             HitPoint->X = B1.X;
             HitPoint->Y = A1.Y;
         }
@@ -149,13 +145,8 @@ bool LinesIntersect(Point_t A1, Point_t A2, Point_t B1, Point_t B2, Point_t* Hit
     return Hit;
 }
 
-int Distance(Point_t A, Point_t B) {
+int Manhattan(Point_t A, Point_t B) {
     return abs(A.X - B.X) + abs(A.Y - B.Y);
-}
-
-int DistanceToOrigin(Point_t A) {
-    Point_t Origin = {};
-    return Distance(Origin, A);
 }
 
 int SolvePuzzle1() {
@@ -169,9 +160,10 @@ int SolvePuzzle1() {
             Point_t B1 = Input.Wires[1].Points[j];
             Point_t B2 = Input.Wires[1].Points[j+1];
 
+            Point_t Origin = {};
             Point_t HitPoint = {};
             if (LinesIntersect(A1, A2, B1, B2, &HitPoint)) {
-                int Distance = DistanceToOrigin(HitPoint);
+                int Distance = Manhattan(Origin, HitPoint);
                 if ((0 < Distance) && (Distance < HitDistance)) {
                     HitDistance = Distance;
                 }
@@ -195,8 +187,8 @@ int SolvePuzzle2() {
 
             Point_t HitPoint = {};
             if (LinesIntersect(A1, A2, B1, B2, &HitPoint)) {
-                int Steps = A1.Steps + Distance(A1, HitPoint)
-                          + B1.Steps + Distance(B1, HitPoint);
+                int Steps = A1.Steps + Manhattan(A1, HitPoint)
+                          + B1.Steps + Manhattan(B1, HitPoint);
                 if ((0 < Steps) && (Steps < TotalSteps)) {
                     TotalSteps = Steps;
                 }
