@@ -149,9 +149,8 @@ int Manhattan(Point_t A, Point_t B) {
     return abs(A.X - B.X) + abs(A.Y - B.Y);
 }
 
-int SolvePuzzle1() {
+int SolvePuzzle1(Input_t Input) {
     int HitDistance = INT_MAX;
-    Input_t Input = LoadInput();
     for (int i = 0; i < Input.Wires[0].Count - 1; ++i) {
         Point_t A1 = Input.Wires[0].Points[i];
         Point_t A2 = Input.Wires[0].Points[i+1];
@@ -174,9 +173,8 @@ int SolvePuzzle1() {
     return HitDistance;
 }
 
-int SolvePuzzle2() {
+int SolvePuzzle2(Input_t Input) {
     int TotalSteps = INT_MAX;
-    Input_t Input = LoadInput();
     for (int i = 0; i < Input.Wires[0].Count - 1; ++i) {
         Point_t A1 = Input.Wires[0].Points[i];
         Point_t A2 = Input.Wires[0].Points[i+1];
@@ -201,7 +199,8 @@ int SolvePuzzle2() {
 
 extern "C"
 int main(int argc, char const* argv[]) {
-    printf("Part 1: %d\n", SolvePuzzle1());
-    printf("Part 2: %d\n", SolvePuzzle2());
+    Input_t Input = LoadInput();
+    printf("Part 1: %d\n", SolvePuzzle1(Input));
+    printf("Part 2: %d\n", SolvePuzzle2(Input));
     return EXIT_SUCCESS;
 }

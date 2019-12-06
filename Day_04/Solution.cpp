@@ -94,9 +94,8 @@ bool TwoAdjacentSameNotPartOfLargerGroup(int Digits[6]) {
         || ((Digits[3] != Digits[4]) && (Digits[4] == Digits[5])                            );
 }
 
-int SolvePuzzle1() {
+int SolvePuzzle1(Input_t Input) {
     int Count = 0;
-    Input_t Input = LoadInput();
     for (int i = Input.LowerBound; i <= Input.UpperBound; ++i) {
         int Digits[6];
         ExtractDigits(i, Digits);
@@ -112,9 +111,8 @@ int SolvePuzzle1() {
     return Count;
 }
 
-int SolvePuzzle2() {
+int SolvePuzzle2(Input_t Input) {
     int Count = 0;
-    Input_t Input = LoadInput();
     for (int i = Input.LowerBound; i <= Input.UpperBound; ++i) {
         int Digits[6];
         ExtractDigits(i, Digits);
@@ -132,7 +130,8 @@ int SolvePuzzle2() {
 
 extern "C"
 int main(int argc, char const* argv[]) {
-    printf("Part 1: %d\n", SolvePuzzle1());
-    printf("Part 2: %d\n", SolvePuzzle2());
+    Input_t Input = LoadInput();
+    printf("Part 1: %d\n", SolvePuzzle1(Input));
+    printf("Part 2: %d\n", SolvePuzzle2(Input));
     return EXIT_SUCCESS;
 }

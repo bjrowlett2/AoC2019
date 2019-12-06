@@ -65,9 +65,8 @@ int ComputeFuel(int mass) {
     return (mass / 3) - 2;
 }
 
-int SolvePuzzle1() {
+int SolvePuzzle1(Input_t Input) {
     int Fuel = 0;
-    Input_t Input = LoadInput();
     for (int i = 0; i < Input.Count; ++i) {
         Fuel += ComputeFuel(Input.Weights[i]);
     }
@@ -75,9 +74,8 @@ int SolvePuzzle1() {
     return Fuel;
 }
 
-int SolvePuzzle2() {
+int SolvePuzzle2(Input_t Input) {
     int TotalFuel = 0;
-    Input_t Input = LoadInput();
     for (int i = 0; i < Input.Count; ++i) {
         int Fuel = ComputeFuel(Input.Weights[i]);
 
@@ -95,7 +93,8 @@ int SolvePuzzle2() {
 
 extern "C"
 int main(int argc, char const* argv[]) {
-    printf("Part 1: %d\n", SolvePuzzle1());
-    printf("Part 2: %d\n", SolvePuzzle2());
+    Input_t Input = LoadInput();
+    printf("Part 1: %d\n", SolvePuzzle1(Input));
+    printf("Part 2: %d\n", SolvePuzzle2(Input));
     return EXIT_SUCCESS;
 }
