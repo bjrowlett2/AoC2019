@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#define MAX_CHILD_COUNT 16
+int const MAX_CHILD_COUNT = 16;
+int const MAX_OBJECT_COUNT = 1536;
 
 struct Object_t {
     char Name[4];
@@ -12,8 +13,6 @@ struct Object_t {
     int ChildCount;
     Object_t* Children[MAX_CHILD_COUNT];
 };
-
-#define MAX_OBJECT_COUNT 1536
 
 struct Input_t {
     int ObjectCount;

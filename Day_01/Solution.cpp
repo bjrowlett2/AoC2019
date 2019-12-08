@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#define MAX_WEIGHT_COUNT 256
+int const MAX_WEIGHT_COUNT = 256;
 
 struct Input_t {
     int Count;

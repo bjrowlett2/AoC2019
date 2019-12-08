@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#define MAX_MEMORY_COUNT 1024
+int const MAX_MEMORY_COUNT = 1024;
 
 struct Input_t {
     int Count;
@@ -160,8 +160,8 @@ bool RunProgram(Amplifier_t* Amplifier, int* Inputs, int* Output) {
     return false;
 }
 
-#define NUM_AMPLIFIERS 5
-#define NUM_PERMUTATIONS 120
+int const NUM_AMPLIFIERS = 5;
+int const NUM_PERMUTATIONS = 120;
 
 int PluckElement(int* Values, int Index) {
     int Result = Values[Index];

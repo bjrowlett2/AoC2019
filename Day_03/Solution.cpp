@@ -6,7 +6,7 @@ struct Point_t {
     int X, Y, Steps;
 };
 
-#define MAX_POINT_COUNT 512
+int const MAX_POINT_COUNT = 512;
 
 struct Wire_t {
     int Count;

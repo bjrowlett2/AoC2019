@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#define MAX_MEMORY_COUNT 256
+int const MAX_MEMORY_COUNT = 256;
 
 struct Input_t {
     int Count;
