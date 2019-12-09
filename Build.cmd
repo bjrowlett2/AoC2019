@@ -20,7 +20,7 @@ IF NOT EXIST ".bin" (
 
 PUSHD ".bin\"
 
-CL "..\Solution.cpp" /DDEBUG /Od /Zi
+CL "..\Solution.cpp" /DDEBUG /Od /std:c++latest /Zi
 
 POPD
 
